@@ -1,0 +1,307 @@
+{
+  "candidatos": [
+      {
+        "tema": "TEMA 1 - CDI - Ciência de Dados e Inteligência Artificial em Dominios Diversos",
+        "nome": "Nicoly Figueredo Pessoa de Almeida"
+      },
+      {
+        "tema": "TEMA 1 - CDI - Ciência de Dados e Inteligência Artificial em Dominios Diversos",
+        "nome": "Emerson Diego da Costa Araujo"
+      },
+      {
+        "tema": "TEMA 1 - CDI - Ciência de Dados e Inteligência Artificial em Dominios Diversos",
+        "nome": "Ricardo Anastácio de Souza"
+      },
+      {
+        "tema": "TEMA 1 - CDI - Ciência de Dados e Inteligência Artificial em Dominios Diversos",
+        "nome": "Alex de Sousa Lima"
+      },
+      {
+        "tema": "TEMA 1 - CDI - Ciência de Dados e Inteligência Artificial em Dominios Diversos",
+        "nome": "Ivan Zichtl Santos"
+      },
+      {
+        "tema": "TEMA 1 - CDI - Ciência de Dados e Inteligência Artificial em Dominios Diversos",
+        "nome": "Armindo Inácio de Araújo Júnior"
+      },
+      {
+        "tema": "TEMA 1 - CDI - Ciência de Dados e Inteligência Artificial em Dominios Diversos",
+        "nome": "Ruanney Nascimento Costa de Almeida"
+      },
+      {
+        "tema": "TEMA 1 - CDI - Ciência de Dados e Inteligência Artificial em Dominios Diversos",
+        "nome": "Fabiano Maciel Vieira"
+      },
+      {
+        "tema": "TEMA 1 - CDI - Ciência de Dados e Inteligência Artificial em Dominios Diversos",
+        "nome": "Diego Juan dos Santos Silva"
+      },
+      {
+        "tema": "TEMA 1 - CDI - Ciência de Dados e Inteligência Artificial em Dominios Diversos",
+        "nome": "Lucas Guimarães da Silva"
+      },
+      {
+        "tema": "TEMA 1 - CDI - Ciência de Dados e Inteligência Artificial em Dominios Diversos",
+        "nome": "Arthur Rolim de Oliveira"
+      },
+      {
+        "tema": "TEMA 1 - CDI - Ciência de Dados e Inteligência Artificial em Dominios Diversos",
+        "nome": "Euridyce Karla Carvalho das Graças"
+      },
+      {
+        "tema": "TEMA 1 - CDI - Ciência de Dados e Inteligência Artificial em Dominios Diversos",
+        "nome": "Felipe Targino do Nascimento"
+      },
+      {
+        "tema": "TEMA 1 - CDI - Ciência de Dados e Inteligência Artificial em Dominios Diversos",
+        "nome": "Leanderson Coelho dos Santos"
+      },
+      {
+        "tema": "TEMA 1 - CDI - Ciência de Dados e Inteligência Artificial em Dominios Diversos",
+        "nome": "Sávio Murillo Dias Bastos"
+      },
+      {
+        "tema": "TEMA 1 - CDI - Ciência de Dados e Inteligência Artificial em Dominios Diversos",
+        "nome": "André Pontes Vaz de Medeiros Filho"
+      },
+      {
+        "tema": "TEMA 1 - CDI - Ciência de Dados e Inteligência Artificial em Dominios Diversos",
+        "nome": "Julio Cezar Rodrigues Trindade"
+      },
+      {
+        "tema": "TEMA 1 - CDI - Ciência de Dados e Inteligência Artificial em Dominios Diversos",
+        "nome": "Thiago Diniz Tomé de Lima"
+      },
+      {
+        "tema": "TEMA 1 - CDI - Ciência de Dados e Inteligência Artificial em Dominios Diversos",
+        "nome": "Edglay Barros"
+      },
+      {
+        "tema": "TEMA 2 - CDI - Matching de Dados e Inteligência Artificial para Streaming de Dados",
+        "nome": "Rodolfo Bolconte Donato"
+      },
+      {
+        "tema": "TEMA 3 - CDI - Métodos de Otimização ou de Aprendizagem de Máquina Aplicados a Problemas das Áreas de Logística, Segurança, Educação, Saúde ou Jogos",
+        "nome": "Isaac Gomes Veras"
+      },
+      {
+        "tema": "TEMA 3 - CDI - Métodos de Otimização ou de Aprendizagem de Máquina Aplicados a Problemas das Áreas de Logística, Segurança, Educação, Saúde ou Jogos",
+        "nome": "Andressa Theotônio Alves de Figueirêdo"
+      },
+      {
+        "tema": "TEMA 3 - CDI - Métodos de Otimização ou de Aprendizagem de Máquina Aplicados a Problemas das Áreas de Logística, Segurança, Educação, Saúde ou Jogos",
+        "nome": "Ericléverson Alves Ramalho de Figueirêdo"
+      },
+      {
+        "tema": "TEMA 3 - CDI - Métodos de Otimização ou de Aprendizagem de Máquina Aplicados a Problemas das Áreas de Logística, Segurança, Educação, Saúde ou Jogos",
+        "nome": "Erick Amaro Outra de Lima"
+      },
+      {
+        "tema": "TEMA 4 - CDI - Arquiteturas e Modelos de Inteligência Artificial Aplicados à Educação, Saúde e Cidades",
+        "nome": "Marina Lima Maraca já Martins"
+      },
+      {
+        "tema": "TEMA 5 - GDS - Inteligência Artificial na Educação",
+        "nome": "Alíssia Deolinda Oliveira de Lima"
+      },
+      {
+        "tema": "TEMA 5 - GDS - Inteligência Artificial na Educação",
+        "nome": "Lucas Pessoa Alves"
+      },
+      {
+        "tema": "TEMA 5 - GDS - Inteligência Artificial na Educação",
+        "nome": "Caroline de Souza Evangelista"
+      },
+      
+      {
+        "tema": "TEMA 5 - GDS - Inteligência Artificial na Educação",
+        "nome": "Lucas Magno de Oliveira Aragão"
+      },
+      {
+        "tema": "TEMA 5 - GDS - Inteligência Artificial na Educação",
+        "nome": "Daniel dos Santos Brandão"
+      },
+      {
+        "tema": "TEMA 5 - GDS - Inteligência Artificial na Educação",
+        "nome": "Osmar Vieira de Sousa"
+      },
+      {
+        "tema": "TEMA 5 - GDS - Inteligência Artificial na Educação",
+        "nome": "Carlos Rodrigo Costa da Silva"
+      },
+      {
+        "tema": "TEMA 5 - GDS - Inteligência Artificial na Educação",
+        "nome": "Wesley Adonai Pereira da Silva"
+      },
+      {
+        "tema": "TEMA 5 - GDS - Inteligência Artificial na Educação",
+        "nome": "Cris Henrique Silva"
+      },
+      {
+        "tema": "TEMA 7- GDS - Soluções em Plataformas de Sensoriamento Inteligente para Indústria",
+        "nome": "José Jefferson Pires Gonçalves"
+      },
+      {
+        "tema": "TEMA 8- GDS - Aplicação de Técnicas Inteligentes no Contexto de Engenharia de Software",
+        "nome": "Ana Beatriz de Araújo Farias"
+      },
+      {
+        "tema": "TEMA 8- GDS - Aplicação de Técnicas Inteligentes no Contexto de Engenharia de Software",
+        "nome": "Bryan Willey Marques Palhano"
+      },
+      {
+        "tema": "TEMA 8- GDS - Aplicação de Técnicas Inteligentes no Contexto de Engenharia de Software",
+        "nome": "Daniel Cunha Costa"
+      },
+      {
+        "tema": "TEMA 8- GDS - Aplicação de Técnicas Inteligentes no Contexto de Engenharia de Software",
+        "nome": "Jonas Bernardino de Lima"
+      },
+      
+      {
+        "tema": "TEMA 8- GDS - Aplicação de Técnicas Inteligentes no Contexto de Engenharia de Software",
+        "nome": "Ivan Fillipe Rodrigues dos Santos"
+      },
+      {
+        "tema": "TEMA 8- GDS - Aplicação de Técnicas Inteligentes no Contexto de Engenharia de Software",
+        "nome": "Kellla Vitória Felipe Bezerra"
+      },
+      {
+        "tema": "TEMA 8- GDS - Aplicação de Técnicas Inteligentes no Contexto de Engenharia de Software",
+        "nome": "Ricardo Pereira Lins"
+      },
+      {
+        "tema": "TEMA 8- GDS - Aplicação de Técnicas Inteligentes no Contexto de Engenharia de Software",
+        "nome": "Isaque Mendes Bezerra"
+      },
+      {
+        "tema": "TEMA 8- GDS - Aplicação de Técnicas Inteligentes no Contexto de Engenharia de Software",
+        "nome": "Rodrigo Resende Santos"
+      },
+      {
+        "tema": "TEMA 8- GDS - Aplicação de Técnicas Inteligentes no Contexto de Engenharia de Software",
+        "nome": "Damião Otávio da Conceição"
+      },
+      {
+        "tema": "TEMA 8- GDS - Aplicação de Técnicas Inteligentes no Contexto de Engenharia de Software",
+        "nome": "Andrew Galvão de Figueiredo Oliveira"
+      },
+      {
+        "tema": "TEMA 9- GDS - Boas Práticas em Gerenciamento de Projetos de Software: Otimizando a Colaboração e Produtividade em Equipes Virtuais ou Híbridos",
+        "nome": "Tiago Diniz Brasileiro Lira"
+      },
+      {
+        "tema": "TEMA 9- GDS - Boas Práticas em Gerenciamento de Projetos de Software: Otimizando a Colaboração e Produtividade em Equipes Virtuais ou Híbridos",
+        "nome": "Mateus de Morais Lima"
+      },
+      {
+        "tema": "TEMA 9- GDS - Boas Práticas em Gerenciamento de Projetos de Software: Otimizando a Colaboração e Produtividade em Equipes Virtuais ou Híbridos",
+        "nome": "Hugo Nathan Soares Diniz"
+      },
+      {
+        "tema": "TEMA 9- GDS - Boas Práticas em Gerenciamento de Projetos de Software: Otimizando a Colaboração e Produtividade em Equipes Virtuais ou Híbridos",
+        "nome": "Adilson Soares da Silva"
+      },
+      {
+        "tema": "TEMA 9- GDS - Boas Práticas em Gerenciamento de Projetos de Software: Otimizando a Colaboração e Produtividade em Equipes Virtuais ou Híbridos",
+        "nome": "Jessé Rangel Queiroz Duarte"
+      },
+      {
+        "tema": "TEMA 9- GDS - Boas Práticas em Gerenciamento de Projetos de Software: Otimizando a Colaboração e Produtividade em Equipes Virtuais ou Híbridos",
+        "nome": "Évelyn Milenna da Nóbrega"
+      },
+      
+      {
+        "tema": "TEMA 10 -GDS- Gestão, Desenvolvimento e Testes em Projetos Ágeis de software",
+        "nome": "Mayron da Costa Bezerra"
+      },
+      {
+        "tema": "TEMA 10 -GDS- Gestão, Desenvolvimento e Testes em Projetos Ágeis de software",
+        "nome": "Hugo Nathan Soares Diniz"
+      },
+      {
+        "tema": "TEMA 10 -GDS- Gestão, Desenvolvimento e Testes em Projetos Ágeis de software",
+        "nome": "Rodrigo Resende Santos"
+      },
+      {
+        "tema": "TEMA 10 -GDS- Gestão, Desenvolvimento e Testes em Projetos Ágeis de software",
+        "nome": "Marcelo Jardim Cardoso"
+      },
+      {
+        "tema": "TEMA 11- GDS - Abordagens Multidisciplinares com Gamificação, Metodologias Ativas e Interação",
+        "nome": "Edmagno do Nascimento Lins"
+      },
+      {
+        "tema": "TEMA 11- GDS - Abordagens Multidisciplinares com Gamificação, Metodologias Ativas e Interação",
+        "nome": "Márcia Cristina Rafael de Lima"
+      },
+      {
+        "tema": "TEMA 11- GDS - Abordagens Multidisciplinares com Gamificação, Metodologias Ativas e Interação",
+        "nome": "Lucyane Kelly Pereira da Silva"
+      },
+      {
+        "tema": "TEMA 11- GDS - Abordagens Multidisciplinares com Gamificação, Metodologias Ativas e Interação",
+        "nome": "Álekiss Manço de Melo"
+      },
+      {
+        "tema": "TEMA 11- GDS - Abordagens Multidisciplinares com Gamificação, Metodologias Ativas e Interação",
+        "nome": "Severino Pereira das Chagas Neto"
+      },
+      {
+        "tema": "TEMA 11- GDS - Abordagens Multidisciplinares com Gamificação, Metodologias Ativas e Interação",
+        "nome": "Thiago Alexandre Agustinho Dos Santos"
+      },
+      {
+        "tema": "TEMA 11- GDS - Abordagens Multidisciplinares com Gamificação, Metodologias Ativas e Interação",
+        "nome": "Diogo de Mendonça Neves"
+      },
+      {
+        "tema": "TEMA 11- GDS - Abordagens Multidisciplinares com Gamificação, Metodologias Ativas e Interação",
+        "nome": "Talitta Ferreira Vieira Lima"
+      },
+      {
+        "tema": "TEMA 12- GDS - Uso de Blockchain e Inteligência Artificial na Transformação Digital do Sistema Único de Saúde (SUS)",
+        "nome": "Fabiano Santana Ferreira"
+      },
+      {
+        "tema": "TEMA 13- GDS - Desenvolvimento de Sistemas Blockchain Apoiados pela Inteligência Artificial",
+        "nome": "Gustavo Lira Santos"
+      },
+      {
+        "tema": "TEMA 14- RSD - Redes 5G Privadas e Computação na Borda para Indústria 4.0",
+        "nome": "Rafael Cavalcante Chaves"
+      },
+      {
+        "tema": "TEMA 14- RSD - Redes 5G Privadas e Computação na Borda para Indústria 4.0",
+        "nome": "Demesio Oliveira"
+      },
+      {
+        "tema": "TEMA 14- RSD - Redes 5G Privadas e Computação na Borda para Indústria 4.0",
+        "nome": "José Silvestre da Silva Galvão"
+      },
+      {
+        "tema": "TEMA 14- RSD - Redes 5G Privadas e Computação na Borda para Indústria 4.0",
+        "nome": "Diego Figueiredo"
+      },
+      {
+        "tema": "TEMA 14- RSD - Redes 5G Privadas e Computação na Borda para Indústria 4.0",
+        "nome": "Alysson Pereira do Nascimento"
+      },
+      {
+        "tema": "TEMA 15- RSD - Desenvolvimento ou avaliação de solução computacional no contexto de redes",
+        "nome": "Cinaglia Adagles da Silva"
+      },
+      {
+        "tema": "TEMA 15- RSD - Desenvolvimento ou avaliação de solução computacional no contexto de redes",
+        "nome": "Cleilson Gurgel de Brito"
+      },
+      {
+        "tema": "TEMA 15- RSD - Desenvolvimento ou avaliação de solução computacional no contexto de redes",
+        "nome": "Paulemir de Sousa Soares"
+      },
+      {
+        "tema": "TEMA 15- RSD - Desenvolvimento ou avaliação de solução computacional no contexto de redes",
+        "nome": "Tiago José Bandeira Lourenço"
+      }
+    ]
+}
