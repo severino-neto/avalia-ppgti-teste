@@ -1,16 +1,25 @@
 import React, { useState } from 'react';
 import { Card, Button, Form, Alert } from 'react-bootstrap';
 import FormularioAvaliacaoPP from './FormularioAvaliacaoPP';
+import FormularioEntrevista from './FormularioEntrevista';
+import FormularioCurriculo from './FormularioCurriculo';
 
 const AvaliacaoCandidato = ({ selectedCandidate }) => {
-const [activeEvaluationTab, setActiveEvaluationTab] = useState(null);
-const handleSubmitFormulario = (dados) => {
-              console.log('Dados recebidos do formulário:', dados);
-            // Aqui você pode fazer:
-            // - Enviar para uma API
-            // - Redirecionar o usuário
-            // - Atualizar o estado global
-            alert('Avaliação enviada com sucesso!');
+  const [activeEvaluationTab, setActiveEvaluationTab] = useState(null);
+  const SubmitFormularioPP = (valores) => {
+    console.log('Dados recebidos do FormularioAvaliacaoPP:', valores, selectedCandidate.nome);
+    // Lógica para salvar os dados
+    alert('Avaliação enviada com sucesso!');
+  };
+  const SubmitEntrevista = (valores) => {
+    console.log('Dados do FormularioEntrevista:', valores, selectedCandidate.nome);
+    // Lógica para salvar os dados
+    alert('Avaliação enviada com sucesso!');
+  };
+   const salvarCurriculo = (valores) => {
+    console.log('Dados do FormularioCurriculo:', valores, selectedCandidate.nome);
+     // Lógica para salvar os dados
+     alert('Avaliação enviada com sucesso!');
   };
 
   return (
@@ -50,31 +59,19 @@ const handleSubmitFormulario = (dados) => {
             </div>
 
             {activeEvaluationTab === 'preProject' && (
-          
-            <div>
-              <h2>Avaliação de Projeto</h2>
-              <FormularioAvaliacaoPP onSubmit={handleSubmitFormulario} />
-            </div>
-           )}
+
+              <div>
+                <h2>Avaliação de Projeto</h2>
+                <FormularioAvaliacaoPP onSubmit={SubmitFormularioPP} />
+              </div>
+            )}
 
             {activeEvaluationTab === 'interview' && (
-              <Form>
-                <Form.Group className="mb-3">
-                  <Form.Label>Nota da Entrevista (0-10)</Form.Label>
-                  <Form.Control type="number" min="0" max="10" step="1" />
-                </Form.Group>
-                <Button variant="success">Salvar Avaliação</Button>
-              </Form>
+              <FormularioEntrevista onSubmit={SubmitEntrevista} />
             )}
 
             {activeEvaluationTab === 'resume' && (
-              <Form>
-                <Form.Group className="mb-3">
-                  <Form.Label>Nota do Currículo (0-10)</Form.Label>
-                  <Form.Control type="number" min="0" max="10" step="1" />
-                </Form.Group>
-                <Button variant="success">Salvar Avaliação</Button>
-              </Form>
+              <FormularioCurriculo onSubmit={salvarCurriculo} />
             )}
 
             {!activeEvaluationTab && (
