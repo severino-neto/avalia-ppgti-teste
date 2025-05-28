@@ -3,6 +3,7 @@ import { Container, Row, Col } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ListagemCandidato from './components/ListagemCandidato';
 import AvaliacaoCandidato from './components/AvaliacaoCandidato';
+import DetalhesCandidato from './components/DetalhesCandidato';
 
 // Dados dos candidatos (pode ser movido para um arquivo JSON separado)
 const candidatosData = {
@@ -14,6 +15,7 @@ const candidatosData = {
 
 const App = () => {
   const [selectedCandidate, setSelectedCandidate] = useState(null);
+  const [viewCandidateInfo, setViewCandidateInfo] = useState(false);
   
   return (
       <Container fluid className="mt-4">
@@ -22,10 +24,12 @@ const App = () => {
             <ListagemCandidato
               candidatos={candidatosData.candidatos}
               onSelectCandidate={setSelectedCandidate}
+              onViewCandidadeInfo={setViewCandidateInfo}
             />
           </Col>
           <Col md={6}>
-            <AvaliacaoCandidato selectedCandidate={selectedCandidate} />
+          { !viewCandidateInfo && <AvaliacaoCandidato selectedCandidate={selectedCandidate} />}
+          { viewCandidateInfo && <DetalhesCandidato selectedCandidate={selectedCandidate} />}
           </Col>
         </Row>
       </Container>

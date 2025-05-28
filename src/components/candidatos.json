@@ -2,19 +2,35 @@
   "candidatos": [
       {
         "tema": "TEMA 1 - CDI - Ciência de Dados e Inteligência Artificial em Dominios Diversos",
-        "nome": "Nicoly Figueredo Pessoa de Almeida"
+        "nome": "Nicoly Figueredo Pessoa de Almeida",
+        "email": "nicoly.figueredo@gmail.com",
+        "dataNascimento": "12/10/1986",
+        "cotista": false,
+        "modalidadeCota": ""
       },
       {
         "tema": "TEMA 1 - CDI - Ciência de Dados e Inteligência Artificial em Dominios Diversos",
-        "nome": "Emerson Diego da Costa Araujo"
+        "nome": "Emerson Diego da Costa Araujo",
+        "email": "emerson.diego@gmail.com",
+        "dataNascimento": "09/03/1998",
+        "cotista": false,
+        "modalidadeCota": ""
       },
       {
         "tema": "TEMA 1 - CDI - Ciência de Dados e Inteligência Artificial em Dominios Diversos",
-        "nome": "Ricardo Anastácio de Souza"
+        "nome": "Ricardo Anastácio de Souza",
+        "email": "ricardo.anastacio@gmail.com",
+        "dataNascimento": "09/01/1990",
+        "cotista": true,
+        "modalidadeCota": "TESTE"
       },
       {
         "tema": "TEMA 1 - CDI - Ciência de Dados e Inteligência Artificial em Dominios Diversos",
-        "nome": "Alex de Sousa Lima"
+        "nome": "Alex de Sousa Lima",
+        "email": "alex.lima@gmail.com",
+        "dataNascimento": "17/11/1997",
+        "cotista": false,
+        "modalidadeCota": ""
       },
       {
         "tema": "TEMA 1 - CDI - Ciência de Dados e Inteligência Artificial em Dominios Diversos",

@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { Card, Button, Dropdown, ListGroup, Alert } from 'react-bootstrap';
 import candidatosData from './candidatos.json';
 
-const ListagemCandidato = ({ candidatos, onSelectCandidate }) => {
+const ListagemCandidato = ({ candidatos, onSelectCandidate, onViewCandidadeInfo }) => {
     const [selectedTheme, setSelectedTheme] = useState('All');
-   
+
     // Extract unique themes
     const themes = ['All', ...new Set(candidatosData.candidatos.map(c => c.tema))];
 
@@ -13,13 +13,13 @@ const ListagemCandidato = ({ candidatos, onSelectCandidate }) => {
         ? candidatosData.candidatos
         : candidatosData.candidatos.filter(c => c.tema === selectedTheme);
 
-    
+
     return (
         <Card>
             <Card.Header className="d-flex justify-content-between align-items-center">
                 <h5>Candidatos</h5>
                 <Dropdown>
-                    <Dropdown.Toggle variant="primary" id="dropdown-themes" style={{ width: "400px", alignItems: "center", overflow: "hidden"}}>
+                    <Dropdown.Toggle variant="primary" id="dropdown-themes" style={{ width: "400px", alignItems: "center", overflow: "hidden" }}>
                         {selectedTheme === 'All' ? 'Todos os Temas' : selectedTheme}
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
@@ -49,19 +49,29 @@ const ListagemCandidato = ({ candidatos, onSelectCandidate }) => {
                                         <strong>{candidate.nome}</strong>
                                     </div>
                                     <div>
-                                        <Button variant="info" size="sm" className="me-2">
+                                        <Button 
+                                            variant="info"
+                                            size="sm"
+                                            className="me-2"
+                                            onClick={() => {
+                                                onViewCandidadeInfo(true)
+                                                onSelectCandidate(candidate)
+                                            }}>
                                             Detalhes
                                         </Button>
                                         <Button
                                             variant="primary"
                                             size="sm"
-                                            onClick={() => onSelectCandidate(candidate)}
+                                            onClick={() => {
+                                                onViewCandidadeInfo(false)
+                                                onSelectCandidate(candidate)
+                                            }}
                                         >
                                             Avaliar
                                         </Button>
                                     </div>
                                 </div>
-                                
+
                                 {/* Linha inferior: Tema */}
                                 <div className="mt-1 text-muted small">
                                     {candidate.tema}
