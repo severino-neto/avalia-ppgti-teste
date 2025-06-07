@@ -1,4 +1,4 @@
-const BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://497b-2804-1b0-f443-bf3b-1d51-288c-1dd4-1e7c.ngrok-free.app';
+const BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080';
 
 //TODO: tornar o id do processo dinamico
 export const API_ENDPOINTS = {
