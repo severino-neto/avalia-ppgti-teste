@@ -32,6 +32,7 @@ const AvaliacaoCandidato = ({ selectedCandidate }) => {
         })
         .finally(() => setLoadingApplicationId(false));
     }
+    
   }, [selectedCandidate?.id]);
 
   const handleStageSelection = (stage) => {
@@ -46,7 +47,7 @@ const AvaliacaoCandidato = ({ selectedCandidate }) => {
     const payload = {
       applicationId,
       processStageId: processStageMap[stage],
-      committeeMemberId: 1,
+      committeeMemberId: 5,
       evaluationDate: new Date().toISOString(),
     };
 
@@ -124,10 +125,9 @@ const AvaliacaoCandidato = ({ selectedCandidate }) => {
         {selectedCandidate ? (
           <>
             <div className="mb-4">
-              <h6>Candidato: {selectedCandidate.nome}</h6>
-              <p className="text-muted">{selectedCandidate.tema}</p>
+              <h6>Candidato: {selectedCandidate.name}</h6>
+              <p className="text-muted">Tema: {selectedCandidate.topicName}</p>
             </div>
-
             {loadingApplicationId ? (
               <div className="text-center">
                 <Spinner animation="border" size="sm" /> Carregando dados da aplicação...
@@ -186,7 +186,7 @@ const AvaliacaoCandidato = ({ selectedCandidate }) => {
         )}
       </Card.Body>
     </Card>
-  );
+);
 };
 
 export default AvaliacaoCandidato;
