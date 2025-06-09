@@ -46,7 +46,7 @@ const AvaliacaoCandidato = ({ selectedCandidate }) => {
     const payload = {
       applicationId,
       processStageId: processStageMap[stage],
-      committeeMemberId: 5,
+      committeeMemberId: 1,
       evaluationDate: new Date().toISOString(),
     };
 

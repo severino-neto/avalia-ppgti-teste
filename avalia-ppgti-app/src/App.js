@@ -1,9 +1,11 @@
 import React, { useState} from 'react';
-import { Container, Row, Col } from 'react-bootstrap';
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import { Container, Row, Col, Navbar, Nav } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import ListagemCandidato from './components/ListagemCandidato';
-import AvaliacaoCandidato from './components/AvaliacaoCandidato';
-import DetalhesCandidato from './components/DetalhesCandidato';
+import Interfacevaliacao from './components/InterfaceAvaliacao';
+import InterfaceResultadoPorEtapa from './components/InterfaceResultadoPorEtapa';
+import InterfaceClassificacao from './components/InterfaceClassificacao';
+import InterfaceLogin from './components/InterfaceLogin';
 
 // Dados dos candidatos (pode ser movido para um arquivo JSON separado)
 const candidatosData = {
@@ -14,26 +16,33 @@ const candidatosData = {
 
 
 const App = () => {
-  const [selectedCandidate, setSelectedCandidate] = useState(null);
-  const [viewCandidateInfo, setViewCandidateInfo] = useState(false);
-  
-  return (
-      <Container fluid className="mt-4">
-        <Row>
-          <Col md={6}>
-            <ListagemCandidato
-              candidatos={candidatosData.candidatos}
-              onSelectCandidate={setSelectedCandidate}
-              onViewCandidadeInfo={setViewCandidateInfo}
-            />
-          </Col>
-          <Col md={6}>
-          { !viewCandidateInfo && <AvaliacaoCandidato selectedCandidate={selectedCandidate} />}
-          { viewCandidateInfo && <DetalhesCandidato selectedCandidate={selectedCandidate} />}
-          </Col>
-        </Row>
-      </Container>
 
+  return (
+     <Router>
+      <Navbar bg="light" variant="light" expand="lg">
+        <Container>
+          <Navbar.Brand href='/'>AVALIA PPGTI</Navbar.Brand>
+           <Navbar.Toggle aria-controls="navbar-nav" />
+             <Navbar.Collapse id="navbar-nav">
+          <Nav className="me-auto">
+            <Nav.Link as={Link} to="/">Avaliação</Nav.Link>
+            <Nav.Link as={Link} to="/resultado">Resultado por Etapa</Nav.Link>
+            <Nav.Link as={Link} to="/classificacao">Classificação</Nav.Link>
+            <Nav.Link as={Link} to="/login">Login</Nav.Link>
+          </Nav>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
+
+      <Container className="mt-4">
+        <Routes>
+          <Route path="/" element={<Interfacevaliacao />} />
+          <Route path="/resultado" element={<InterfaceResultadoPorEtapa />} />
+          <Route path="/classificacao" element={<InterfaceClassificacao />} />
+          <Route path="/login" element={<InterfaceLogin />} />
+        </Routes>
+      </Container>
+    </Router>
   );
 };
 
