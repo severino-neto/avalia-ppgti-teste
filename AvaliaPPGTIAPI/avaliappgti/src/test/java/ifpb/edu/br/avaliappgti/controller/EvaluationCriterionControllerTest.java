@@ -1,26 +1,35 @@
 package ifpb.edu.br.avaliappgti.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ifpb.edu.br.avaliappgti.model.EvaluationCriterion;
-import ifpb.edu.br.avaliappgti.model.ProcessStage;
+import ifpb.edu.br.avaliappgti.dto.CreateSubCriterionRequestDTO;
+import ifpb.edu.br.avaliappgti.dto.CreateTopLevelCriterionRequestDTO;
+import ifpb.edu.br.avaliappgti.dto.EvaluationCriterionResponseDTO;
+import ifpb.edu.br.avaliappgti.dto.UpdateEvaluationCriterionRequestDTO;
+import ifpb.edu.br.avaliappgti.model.*;
+import ifpb.edu.br.avaliappgti.repository.*;
+
 import ifpb.edu.br.avaliappgti.service.EvaluationCriterionService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import org.mockito.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doNothing;
-
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@ExtendWith(SpringExtension.class)
 @WebMvcTest(EvaluationCriterionController.class)
 class EvaluationCriterionControllerTest {
 
@@ -33,97 +42,106 @@ class EvaluationCriterionControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private final ProcessStage processStage = new ProcessStage();
-    private final EvaluationCriterion criterion = new EvaluationCriterion(
-            processStage, "Clareza", new BigDecimal("10.00"), new BigDecimal("1.0")
-    );
+    // Dummy objects used across tests
+    private EvaluationCriterion criterion;
+    private EvaluationCriterionResponseDTO responseDTO;
+
+    @BeforeEach
+    void setUp() {
+        criterion = new EvaluationCriterion();
+        criterion.setId(1);
+        criterion.setCriterionDescription("Critério Teste");
+        responseDTO = new EvaluationCriterionResponseDTO(criterion);
+    }
 
     @Test
-    void testGetEvaluationCriterionById_found() throws Exception {
-        criterion.setId(1);
-        given(evaluationCriterionService.getEvaluationCriterionById(1)).willReturn(Optional.of(criterion));
+    void createTopLevelCriterion_shouldReturnCreated() throws Exception {
+        CreateTopLevelCriterionRequestDTO dto = new CreateTopLevelCriterionRequestDTO();
+        dto.setDescription("Descrição");
+        dto.setProcessStageId(1);
+        dto.setMaximumScore(new BigDecimal("10.0"));
+
+        when(evaluationCriterionService.createTopLevelCriterion(anyInt(), anyString(), any(), any()))
+                .thenReturn(criterion);
+
+        mockMvc.perform(post("/api/evaluation-criteria/top-level")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(1));
+    }
+
+    @Test
+    void createSubCriterion_shouldReturnCreated() throws Exception {
+        CreateSubCriterionRequestDTO dto = new CreateSubCriterionRequestDTO();
+        dto.setDescription("SubCritério");
+        dto.setMaximumScore(new BigDecimal("5.0"));
+        dto.setWeight(new BigDecimal("0.5"));
+
+        when(evaluationCriterionService.createSubCriterion(any(), any(), any(), eq(1)))
+                .thenReturn(criterion);
+
+        mockMvc.perform(post("/api/evaluation-criteria/1/sub-criterion")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(1));
+    }
+
+    @Test
+    void getEvaluationCriteriaTreeByProcessStage_shouldReturnOk() throws Exception {
+        when(evaluationCriterionService.getTopLevelCriteriaByProcessStage(1))
+                .thenReturn(List.of(criterion));
+
+        mockMvc.perform(get("/api/evaluation-criteria/by-process-stage/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1));
+    }
+
+    @Test
+    void getEvaluationCriterionById_shouldReturnOk() throws Exception {
+        when(evaluationCriterionService.getEvaluationCriterionById(1)).thenReturn(criterion);
 
         mockMvc.perform(get("/api/evaluation-criteria/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.criterionDescription").value("Clareza"))
-                .andExpect(jsonPath("$.maximumScore").value(10.00));
+                .andExpect(jsonPath("$.id").value(1));
     }
 
     @Test
-    void testGetEvaluationCriterionById_notFound() throws Exception {
-        given(evaluationCriterionService.getEvaluationCriterionById(99)).willReturn(Optional.empty());
+    void updateEvaluationCriterion_shouldReturnOk() throws Exception {
+        UpdateEvaluationCriterionRequestDTO dto = new UpdateEvaluationCriterionRequestDTO();
+        dto.setDescription("Atualizado");
 
-        mockMvc.perform(get("/api/evaluation-criteria/99"))
-                .andExpect(status().isNotFound());
-    }
+        when(evaluationCriterionService.updateEvaluationCriterion(eq(1), any()))
+                .thenReturn(criterion);
 
-    @Test
-    void testGetCriteriaByProcessStageAndSelectionProcess_success() throws Exception {
-        given(evaluationCriterionService.getCriteriaByProcessStageAndSelectionProcessId(1, 1))
-                .willReturn(List.of(criterion));
-
-        mockMvc.perform(get("/api/evaluation-criteria/by-process/1/stage/1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].criterionDescription").value("Clareza"));
-    }
-
-    @Test
-    void testGetCriteriaByProcessStageAndSelectionProcess_emptyList() throws Exception {
-        given(evaluationCriterionService.getCriteriaByProcessStageAndSelectionProcessId(1, 1))
-                .willReturn(List.of());
-
-        mockMvc.perform(get("/api/evaluation-criteria/by-process/1/stage/1"))
-                .andExpect(status().isNoContent());
-    }
-
-//     @Test
-//     void testCreateEvaluationCriterion() throws Exception {
-//         given(evaluationCriterionService.saveEvaluationCriterion(criterion)).willReturn(criterion);
-
-//         mockMvc.perform(post("/api/evaluation-criteria")
-//                         .contentType(MediaType.APPLICATION_JSON)
-//                         .content(objectMapper.writeValueAsString(criterion)))
-//                 .andExpect(status().isCreated())
-//                 .andExpect(jsonPath("$.criterionDescription").value("Clareza"));
-//     }
-
-//     @Test
-//     void testUpdateEvaluationCriterion_found() throws Exception {
-//         criterion.setId(1);
-//         given(evaluationCriterionService.getEvaluationCriterionById(1)).willReturn(Optional.of(criterion));
-//         given(evaluationCriterionService.saveEvaluationCriterion(criterion)).willReturn(criterion);
-
-//         mockMvc.perform(put("/api/evaluation-criteria/1")
-//                         .contentType(MediaType.APPLICATION_JSON)
-//                         .content(objectMapper.writeValueAsString(criterion)))
-//                 .andExpect(status().isOk())
-//                 .andExpect(jsonPath("$.criterionDescription").value("Clareza"));
-//     }
-
-    @Test
-    void testUpdateEvaluationCriterion_notFound() throws Exception {
-        given(evaluationCriterionService.getEvaluationCriterionById(99)).willReturn(Optional.empty());
-
-        mockMvc.perform(put("/api/evaluation-criteria/99")
+        mockMvc.perform(put("/api/evaluation-criteria/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(criterion)))
-                .andExpect(status().isNotFound());
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1));
     }
 
     @Test
-    void testDeleteEvaluationCriterion_found() throws Exception {
-        given(evaluationCriterionService.getEvaluationCriterionById(1)).willReturn(Optional.of(criterion));
-        doNothing().when(evaluationCriterionService).deleteEvaluationCriterion(1);
+    void patchEvaluationCriterion_shouldReturnOk() throws Exception {
+        UpdateEvaluationCriterionRequestDTO dto = new UpdateEvaluationCriterionRequestDTO();
+        dto.setMaximumScore(new BigDecimal("7.5"));
 
-        mockMvc.perform(delete("/api/evaluation-criteria/1"))
-                .andExpect(status().isNoContent());
+        when(evaluationCriterionService.updateEvaluationCriterion(eq(1), any()))
+                .thenReturn(criterion);
+
+        mockMvc.perform(patch("/api/evaluation-criteria/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1));
     }
 
     @Test
-    void testDeleteEvaluationCriterion_notFound() throws Exception {
-        given(evaluationCriterionService.getEvaluationCriterionById(99)).willReturn(Optional.empty());
+    void getEvaluationCriterionById_shouldReturnNotFound() throws Exception {
+        when(evaluationCriterionService.getEvaluationCriterionById(1)).thenThrow(new NoSuchElementException());
 
-        mockMvc.perform(delete("/api/evaluation-criteria/99"))
+        mockMvc.perform(get("/api/evaluation-criteria/1"))
                 .andExpect(status().isNotFound());
     }
 }

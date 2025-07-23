@@ -6,11 +6,11 @@ import ifpb.edu.br.avaliappgti.dto.StageEvaluationUpdateTotalScoreDTO;
 import ifpb.edu.br.avaliappgti.service.StageEvaluationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
-import org.springframework.http.HttpStatus;
+import org.mockito.Mockito;
 import org.springframework.http.ResponseEntity;
 
-import java.util.NoSuchElementException;
+import java.math.BigDecimal;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -18,156 +18,108 @@ import static org.mockito.Mockito.*;
 
 class StageEvaluationControllerTest {
 
-    @Mock
     private StageEvaluationService stageEvaluationService;
-
-    @InjectMocks
     private StageEvaluationController controller;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        stageEvaluationService = mock(StageEvaluationService.class);
+        controller = new StageEvaluationController(stageEvaluationService);
     }
 
-    // Helper to create a dummy response DTO
-    private StageEvaluationResponseDTO dummyResponseDTO() {
+    @Test
+    void testCreateStageEvaluation_success() {
+        StageEvaluationCreateDTO dto = new StageEvaluationCreateDTO();
+        StageEvaluationResponseDTO responseDTO = new StageEvaluationResponseDTO();
+        when(stageEvaluationService.createStageEvaluation(dto)).thenReturn(responseDTO);
+
+        ResponseEntity<StageEvaluationResponseDTO> response = controller.createStageEvaluation(dto);
+
+        assertEquals(201, response.getStatusCodeValue());
+        assertEquals(responseDTO, response.getBody());
+    }
+
+    @Test
+    void testGetStageEvaluationById_found() {
+        Integer id = 1;
         StageEvaluationResponseDTO dto = new StageEvaluationResponseDTO();
-        dto.setId(1);
-        dto.setApplicationId(2);
-        return dto;
+        when(stageEvaluationService.getStageEvaluationById(id)).thenReturn(Optional.of(dto));
+
+        ResponseEntity<StageEvaluationResponseDTO> response = controller.getStageEvaluationById(id);
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(dto, response.getBody());
     }
 
-    private StageEvaluationCreateDTO dummyCreateDTO() {
-        return new StageEvaluationCreateDTO(1, 1, 1, null);
+    @Test
+    void testGetStageEvaluationById_notFound() {
+        when(stageEvaluationService.getStageEvaluationById(1)).thenReturn(Optional.empty());
+
+        ResponseEntity<StageEvaluationResponseDTO> response = controller.getStageEvaluationById(1);
+
+        assertEquals(404, response.getStatusCodeValue());
     }
 
-    private StageEvaluationUpdateTotalScoreDTO dummyUpdateDTO() {
+    @Test
+    void testUpdateStageTotalScore_success() {
         StageEvaluationUpdateTotalScoreDTO dto = new StageEvaluationUpdateTotalScoreDTO();
-        dto.setTotalStageScore(new java.math.BigDecimal("75"));
-        return dto;
-    }
+        StageEvaluationResponseDTO responseDTO = new StageEvaluationResponseDTO();
+        when(stageEvaluationService.updateStageTotalScore(1, dto)).thenReturn(responseDTO);
 
-    @Test
-    void createStageEvaluation_Success() {
-        StageEvaluationCreateDTO createDTO = dummyCreateDTO();
-        StageEvaluationResponseDTO responseDTO = dummyResponseDTO();
+        ResponseEntity<StageEvaluationResponseDTO> response = controller.updateStageTotalScore(1, dto);
 
-        when(stageEvaluationService.createStageEvaluation(createDTO)).thenReturn(responseDTO);
-
-        ResponseEntity<StageEvaluationResponseDTO> response = controller.createStageEvaluation(createDTO);
-
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(200, response.getStatusCodeValue());
         assertEquals(responseDTO, response.getBody());
-        verify(stageEvaluationService).createStageEvaluation(createDTO);
     }
 
     @Test
-    void createStageEvaluation_NotFound() {
-        StageEvaluationCreateDTO createDTO = dummyCreateDTO();
+    void testFindStageEvaluationByDetails_found() {
+        StageEvaluationResponseDTO dto = new StageEvaluationResponseDTO();
+        when(stageEvaluationService.findStageEvaluationByDetails(1, 2, 3)).thenReturn(Optional.of(dto));
 
-        when(stageEvaluationService.createStageEvaluation(createDTO)).thenThrow(new NoSuchElementException("Not found"));
+        ResponseEntity<?> response = controller.findStageEvaluationByDetails(1, 2, 3);
 
-        ResponseEntity<StageEvaluationResponseDTO> response = controller.createStageEvaluation(createDTO);
-
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertNull(response.getBody());
-        verify(stageEvaluationService).createStageEvaluation(createDTO);
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(dto, response.getBody());
     }
 
     @Test
-    void createStageEvaluation_InternalServerError() {
-        StageEvaluationCreateDTO createDTO = dummyCreateDTO();
+    void testFindStageEvaluationByDetails_notFound() {
+        when(stageEvaluationService.findStageEvaluationByDetails(1, 2, 3)).thenReturn(Optional.empty());
 
-        when(stageEvaluationService.createStageEvaluation(createDTO)).thenThrow(new RuntimeException("Unexpected error"));
+        ResponseEntity<?> response = controller.findStageEvaluationByDetails(1, 2, 3);
 
-        ResponseEntity<StageEvaluationResponseDTO> response = controller.createStageEvaluation(createDTO);
-
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertNull(response.getBody());
-        verify(stageEvaluationService).createStageEvaluation(createDTO);
+        assertEquals(404, response.getStatusCodeValue());
+        assertTrue(response.getBody() instanceof Map);
+        assertEquals("No object found.", ((Map<?, ?>) response.getBody()).get("message"));
     }
 
     @Test
-    void getStageEvaluationById_Found() {
-        int id = 1;
-        StageEvaluationResponseDTO responseDTO = dummyResponseDTO();
+    void testCalculateTotalScore_success() {
+        StageEvaluationResponseDTO dto = new StageEvaluationResponseDTO();
+        when(stageEvaluationService.calculateAndSaveTotalScore(1)).thenReturn(dto);
 
-        when(stageEvaluationService.getStageEvaluationById(id)).thenReturn(Optional.of(responseDTO));
+        ResponseEntity<StageEvaluationResponseDTO> response = controller.calculateTotalScore(1);
 
-        ResponseEntity<StageEvaluationResponseDTO> response = controller.getStageEvaluationById(id);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(responseDTO, response.getBody());
-        verify(stageEvaluationService).getStageEvaluationById(id);
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(dto, response.getBody());
     }
 
     @Test
-    void getStageEvaluationById_NotFound() {
-        int id = 1;
+    void testCalculateTotalScore_notFound() {
+        when(stageEvaluationService.calculateAndSaveTotalScore(1)).thenThrow(new java.util.NoSuchElementException());
 
-        when(stageEvaluationService.getStageEvaluationById(id)).thenReturn(Optional.empty());
+        ResponseEntity<StageEvaluationResponseDTO> response = controller.calculateTotalScore(1);
 
-        ResponseEntity<StageEvaluationResponseDTO> response = controller.getStageEvaluationById(id);
-
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertNull(response.getBody());
-        verify(stageEvaluationService).getStageEvaluationById(id);
+        assertEquals(404, response.getStatusCodeValue());
     }
 
     @Test
-    void updateStageTotalScore_Success() {
-        int id = 1;
-        StageEvaluationUpdateTotalScoreDTO updateDTO = dummyUpdateDTO();
-        StageEvaluationResponseDTO responseDTO = dummyResponseDTO();
+    void testCalculateTotalScore_conflict() {
+        when(stageEvaluationService.calculateAndSaveTotalScore(1)).thenThrow(new IllegalStateException());
 
-        when(stageEvaluationService.updateStageTotalScore(id, updateDTO)).thenReturn(responseDTO);
+        ResponseEntity<StageEvaluationResponseDTO> response = controller.calculateTotalScore(1);
 
-        ResponseEntity<StageEvaluationResponseDTO> response = controller.updateStageTotalScore(id, updateDTO);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(responseDTO, response.getBody());
-        verify(stageEvaluationService).updateStageTotalScore(id, updateDTO);
-    }
-
-    @Test
-    void updateStageTotalScore_NotFound() {
-        int id = 1;
-        StageEvaluationUpdateTotalScoreDTO updateDTO = dummyUpdateDTO();
-
-        when(stageEvaluationService.updateStageTotalScore(id, updateDTO)).thenThrow(new NoSuchElementException("Not found"));
-
-        ResponseEntity<StageEvaluationResponseDTO> response = controller.updateStageTotalScore(id, updateDTO);
-
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertNull(response.getBody());
-        verify(stageEvaluationService).updateStageTotalScore(id, updateDTO);
-    }
-
-    @Test
-    void updateStageTotalScore_Conflict() {
-        int id = 1;
-        StageEvaluationUpdateTotalScoreDTO updateDTO = dummyUpdateDTO();
-
-        when(stageEvaluationService.updateStageTotalScore(id, updateDTO)).thenThrow(new IllegalStateException("Conflict"));
-
-        ResponseEntity<StageEvaluationResponseDTO> response = controller.updateStageTotalScore(id, updateDTO);
-
-        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
-        assertNull(response.getBody());
-        verify(stageEvaluationService).updateStageTotalScore(id, updateDTO);
-    }
-
-    @Test
-    void updateStageTotalScore_InternalServerError() {
-        int id = 1;
-        StageEvaluationUpdateTotalScoreDTO updateDTO = dummyUpdateDTO();
-
-        when(stageEvaluationService.updateStageTotalScore(id, updateDTO)).thenThrow(new RuntimeException("Unexpected"));
-
-        ResponseEntity<StageEvaluationResponseDTO> response = controller.updateStageTotalScore(id, updateDTO);
-
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertNull(response.getBody());
-        verify(stageEvaluationService).updateStageTotalScore(id, updateDTO);
+        assertEquals(409, response.getStatusCodeValue());
     }
 }

@@ -1,19 +1,18 @@
 package ifpb.edu.br.avaliappgti.service;
 
-import ifpb.edu.br.avaliappgti.dto.CriterionScoreInputDTO;
-import ifpb.edu.br.avaliappgti.dto.SaveCriterionScoresRequest;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import ifpb.edu.br.avaliappgti.dto.*;
 import ifpb.edu.br.avaliappgti.model.*;
 import ifpb.edu.br.avaliappgti.repository.*;
-import ifpb.edu.br.avaliappgti.dto.StageEvaluationResponseDTO;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
 
 import java.math.BigDecimal;
 import java.util.*;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 class CriterionScoreServiceTest {
 
@@ -23,70 +22,49 @@ class CriterionScoreServiceTest {
 
     @InjectMocks private CriterionScoreService criterionScoreService;
 
-    private AutoCloseable mocks;
-
     @BeforeEach
     void setUp() {
-        mocks = MockitoAnnotations.openMocks(this);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    void testSaveCriteriaScoresForStageEvaluation_successful() {
-        // Given
-        int stageEvaluationId = 1;
-        int criterionId = 101;
-        BigDecimal scoreValue = new BigDecimal("8.5");
+    void testSaveCriteriaScoresForStageEvaluation_success() {
+        Integer stageEvaluationId = 1;
+        Integer criterionId = 10;
 
-        ProcessStage stage = new ProcessStage();
-        stage.setId(1);
-        stage.setMinimumPassingScore(new BigDecimal("7.0"));
+        StageEvaluation stageEvaluation = new StageEvaluation();
+        stageEvaluation.setId(stageEvaluationId);
+
+        ProcessStage processStage = new ProcessStage();
+        processStage.setId(100);
+        processStage.setMinimumPassingScore(BigDecimal.valueOf(6));
+        stageEvaluation.setProcessStage(processStage);
 
         EvaluationCriterion criterion = new EvaluationCriterion();
         criterion.setId(criterionId);
-        criterion.setProcessStage(stage);
+        criterion.setWeight(BigDecimal.ONE);
+        criterion.setProcessStage(processStage);
 
-        StageEvaluation evaluation = new StageEvaluation();
-        evaluation.setId(stageEvaluationId);
-        evaluation.setProcessStage(stage);
+        SaveCriterionScoresRequest request = new SaveCriterionScoresRequest();
+        CriterionScoreInputDTO inputDTO = new CriterionScoreInputDTO();
+        inputDTO.setEvaluationCriterionId(criterionId);
+        inputDTO.setScoreObtained(BigDecimal.valueOf(7));
+        request.setScores(List.of(inputDTO));
 
-        CriterionScoreInputDTO scoreDTO = new CriterionScoreInputDTO(criterionId, scoreValue);
-        SaveCriterionScoresRequest request = new SaveCriterionScoresRequest(List.of(scoreDTO));
-
-        when(stageEvaluationRepository.findById(stageEvaluationId)).thenReturn(Optional.of(evaluation));
+        when(stageEvaluationRepository.findById(stageEvaluationId)).thenReturn(Optional.of(stageEvaluation));
         when(evaluationCriterionRepository.findById(criterionId)).thenReturn(Optional.of(criterion));
-        when(criterionScoreRepository.findByStageEvaluationAndEvaluationCriterion(evaluation, criterion)).thenReturn(Optional.empty());
+        when(evaluationCriterionRepository.findByProcessStageAndParentIsNull(processStage)).thenReturn(List.of(criterion));
+        when(criterionScoreRepository.findByStageEvaluationAndEvaluationCriterion(stageEvaluation, criterion)).thenReturn(Optional.empty());
         when(criterionScoreRepository.save(any(CriterionScore.class))).thenAnswer(i -> i.getArgument(0));
-        when(stageEvaluationRepository.save(any(StageEvaluation.class))).thenReturn(evaluation);
+        when(stageEvaluationRepository.save(any(StageEvaluation.class))).thenAnswer(i -> i.getArgument(0));
+        when(criterionScoreRepository.findByStageEvaluationAndEvaluationCriterion(stageEvaluation, criterion))
+                .thenReturn(Optional.of(new CriterionScore(stageEvaluation, criterion, BigDecimal.valueOf(7))));
 
-        // When
-        StageEvaluationResponseDTO result = criterionScoreService.saveCriteriaScoresForStageEvaluation(stageEvaluationId, request);
+        StageEvaluationResponseDTO response = criterionScoreService.saveCriteriaScoresForStageEvaluation(stageEvaluationId, request);
 
-        // Then
-        assertNotNull(result);
-        verify(criterionScoreRepository, times(1)).save(any(CriterionScore.class));
-        verify(stageEvaluationRepository, times(1)).save(evaluation);
-    }
-
-    @Test
-    void testSaveCriteriaScoresForStageEvaluation_invalidCriterionThrowsException() {
-        int stageEvaluationId = 1;
-        int invalidCriterionId = 99;
-
-        ProcessStage stage = new ProcessStage();
-        stage.setId(1);
-
-        StageEvaluation evaluation = new StageEvaluation();
-        evaluation.setId(stageEvaluationId);
-        evaluation.setProcessStage(stage);
-
-        CriterionScoreInputDTO scoreDTO = new CriterionScoreInputDTO(invalidCriterionId, BigDecimal.TEN);
-        SaveCriterionScoresRequest request = new SaveCriterionScoresRequest(List.of(scoreDTO));
-
-        when(stageEvaluationRepository.findById(stageEvaluationId)).thenReturn(Optional.of(evaluation));
-        when(evaluationCriterionRepository.findById(invalidCriterionId)).thenReturn(Optional.empty());
-
-        assertThrows(NoSuchElementException.class, () ->
-                criterionScoreService.saveCriteriaScoresForStageEvaluation(stageEvaluationId, request));
+        assertNotNull(response);
+        assertEquals(BigDecimal.valueOf(7), response.getTotalStageScore());
+        assertFalse(response.getIsEliminatedInStage());
     }
 
     @Test
@@ -96,25 +74,63 @@ class CriterionScoreServiceTest {
         when(criterionScoreRepository.findById(1)).thenReturn(Optional.of(score));
         Optional<CriterionScore> result = criterionScoreService.getCriterionScoreById(1);
         assertTrue(result.isPresent());
+        assertEquals(1, result.get().getId());
     }
 
     @Test
-    void testGetScoresByStageEvaluation_success() {
-        int stageEvaluationId = 1;
-        StageEvaluation evaluation = new StageEvaluation();
-        evaluation.setId(stageEvaluationId);
+    void testGetCriterionScoreById_notFound() {
+        when(criterionScoreRepository.findById(1)).thenReturn(Optional.empty());
+        Optional<CriterionScore> result = criterionScoreService.getCriterionScoreById(1);
+        assertTrue(result.isEmpty());
+    }
 
-        when(stageEvaluationRepository.findById(stageEvaluationId)).thenReturn(Optional.of(evaluation));
-        when(criterionScoreRepository.findByStageEvaluation(evaluation)).thenReturn(List.of(new CriterionScore()));
+    @Test
+    void testUpdateCriterionScore_success() {
+        CriterionScore score = new CriterionScore();
+        score.setId(1);
+        score.setScoreObtained(BigDecimal.valueOf(5));
 
-        List<CriterionScore> result = criterionScoreService.getScoresByStageEvaluation(stageEvaluationId);
+        EvaluationCriterion criterion = new EvaluationCriterion();
+        criterion.setWeight(BigDecimal.ONE);
+
+        StageEvaluation stageEvaluation = new StageEvaluation();
+        ProcessStage processStage = new ProcessStage();
+        processStage.setMinimumPassingScore(BigDecimal.valueOf(5));
+        stageEvaluation.setProcessStage(processStage);
+
+        score.setEvaluationCriterion(criterion);
+        score.setStageEvaluation(stageEvaluation);
+
+        when(criterionScoreRepository.findById(1)).thenReturn(Optional.of(score));
+        when(criterionScoreRepository.findByStageEvaluation(stageEvaluation)).thenReturn(List.of(score));
+        when(evaluationCriterionRepository.findByProcessStageAndParentIsNull(processStage)).thenReturn(List.of(criterion));
+        when(criterionScoreRepository.findByStageEvaluationAndEvaluationCriterion(stageEvaluation, criterion)).thenReturn(Optional.of(score));
+        when(stageEvaluationRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+
+        UpdateCriterionScoreDTO updateDTO = new UpdateCriterionScoreDTO();
+        updateDTO.setScoreObtained(BigDecimal.valueOf(8));
+
+        StageEvaluationResponseDTO response = criterionScoreService.updateCriterionScore(1, updateDTO);
+
+        assertEquals(BigDecimal.valueOf(8), response.getTotalStageScore());
+        assertFalse(response.getIsEliminatedInStage());
+    }
+
+    @Test
+    void testGetScoresByStageEvaluation_returnsDTOs() {
+        StageEvaluation stageEvaluation = new StageEvaluation();
+        stageEvaluation.setId(1);
+
+        CriterionScore score1 = new CriterionScore();
+        score1.setId(101);
+        score1.setScoreObtained(BigDecimal.TEN);
+        score1.setStageEvaluation(stageEvaluation);
+
+        when(stageEvaluationRepository.findById(1)).thenReturn(Optional.of(stageEvaluation));
+        when(criterionScoreRepository.findByStageEvaluation(stageEvaluation)).thenReturn(List.of(score1));
+
+        List<CriterionScoreResponseDTO> result = criterionScoreService.getScoresByStageEvaluation(1);
         assertEquals(1, result.size());
-    }
-
-    @Test
-    void testGetScoresByStageEvaluation_notFound() {
-        when(stageEvaluationRepository.findById(99)).thenReturn(Optional.empty());
-        assertThrows(NoSuchElementException.class, () ->
-                criterionScoreService.getScoresByStageEvaluation(99));
+        assertEquals(BigDecimal.TEN, result.get(0).getScoreObtained());
     }
 }

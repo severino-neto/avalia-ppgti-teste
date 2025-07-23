@@ -1,7 +1,8 @@
 import React from 'react';
+import ClassificacaoGeral from './ClassificacaoGeral';
 
 const InterfaceClassificacao = () => {
-  return <h2>Classificação</h2>;
+  return <ClassificacaoGeral></ClassificacaoGeral>
 };
 
 export default InterfaceClassificacao;

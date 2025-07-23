@@ -1,7 +1,8 @@
 import React from 'react';
+import ClassificacaoPorEtapa from './ClassificacaoPorEtapa';
 
 const InterfaceResultadoPorEtapa = () => {
-  return <h2>Resultado por Etapa</h2>;
+  return <ClassificacaoPorEtapa></ClassificacaoPorEtapa>
 };
 
 export default InterfaceResultadoPorEtapa;

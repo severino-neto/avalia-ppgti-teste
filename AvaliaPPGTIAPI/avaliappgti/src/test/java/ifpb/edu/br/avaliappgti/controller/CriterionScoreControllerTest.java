@@ -1,194 +1,158 @@
 package ifpb.edu.br.avaliappgti.controller;
 
-import ifpb.edu.br.avaliappgti.dto.SaveCriterionScoresRequest;
-import ifpb.edu.br.avaliappgti.dto.StageEvaluationResponseDTO;
-import ifpb.edu.br.avaliappgti.model.CriterionScore;
+import ifpb.edu.br.avaliappgti.dto.*;
 import ifpb.edu.br.avaliappgti.service.CriterionScoreService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
-import org.springframework.http.HttpStatus;
+import org.mockito.Mockito;
 import org.springframework.http.ResponseEntity;
 
-import java.math.BigDecimal;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class CriterionScoreControllerTest {
 
-    @Mock
     private CriterionScoreService criterionScoreService;
-
-    @InjectMocks
     private CriterionScoreController controller;
 
     @BeforeEach
-    void setup() {
-        MockitoAnnotations.openMocks(this);
+    void setUp() {
+        criterionScoreService = mock(CriterionScoreService.class);
+        controller = new CriterionScoreController(criterionScoreService);
     }
 
-    // Helper dummy StageEvaluationResponseDTO
-    private StageEvaluationResponseDTO dummyStageEvaluationResponseDTO() {
-        StageEvaluationResponseDTO dto = new StageEvaluationResponseDTO();
-        dto.setId(1);
-        dto.setApplicationId(10);
-        return dto;
+    // === Test: GET /by-stage-evaluation/{id} ===
+    @Test
+    void getScoresByStageEvaluation_shouldReturnScores() {
+        Integer stageEvaluationId = 1;
+        List<CriterionScoreResponseDTO> mockScores = List.of(new CriterionScoreResponseDTO());
+
+        when(criterionScoreService.getScoresByStageEvaluation(stageEvaluationId)).thenReturn(mockScores);
+
+        ResponseEntity<List<CriterionScoreResponseDTO>> response = controller.getScoresByStageEvaluation(stageEvaluationId);
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(mockScores, response.getBody());
     }
-
-    // Helper dummy SaveCriterionScoresRequest
-    private SaveCriterionScoresRequest dummySaveCriterionScoresRequest() {
-        return new SaveCriterionScoresRequest(Collections.emptyList());
-    }
-
-    // Helper dummy CriterionScore list
-    private List<CriterionScore> dummyCriterionScores() {
-        CriterionScore score1 = new CriterionScore();
-        score1.setId(1);
-        score1.setScoreObtained(new BigDecimal("80"));
-
-        CriterionScore score2 = new CriterionScore();
-        score2.setId(2);
-        score2.setScoreObtained(new BigDecimal("90"));
-
-        return Arrays.asList(score1, score2);
-    }
-
-    // Tests for POST /evaluate/{stageEvaluationId}
 
     @Test
-    void evaluateStage_Success() {
-        int stageEvaluationId = 1;
-        SaveCriterionScoresRequest request = dummySaveCriterionScoresRequest();
-        StageEvaluationResponseDTO responseDTO = dummyStageEvaluationResponseDTO();
+    void getScoresByStageEvaluation_shouldReturnNoContent() {
+        when(criterionScoreService.getScoresByStageEvaluation(1)).thenReturn(Collections.emptyList());
 
-        when(criterionScoreService.saveCriteriaScoresForStageEvaluation(stageEvaluationId, request))
-                .thenReturn(responseDTO);
+        ResponseEntity<List<CriterionScoreResponseDTO>> response = controller.getScoresByStageEvaluation(1);
 
-        ResponseEntity<StageEvaluationResponseDTO> response = controller.evaluateStage(stageEvaluationId, request);
+        assertEquals(204, response.getStatusCodeValue());
+        assertNull(response.getBody());
+    }
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+    @Test
+    void getScoresByStageEvaluation_shouldReturnNotFound() {
+        when(criterionScoreService.getScoresByStageEvaluation(1)).thenThrow(new NoSuchElementException());
+
+        ResponseEntity<List<CriterionScoreResponseDTO>> response = controller.getScoresByStageEvaluation(1);
+
+        assertEquals(404, response.getStatusCodeValue());
+    }
+
+    @Test
+    void getScoresByStageEvaluation_shouldReturnInternalServerError() {
+        when(criterionScoreService.getScoresByStageEvaluation(1)).thenThrow(new RuntimeException("DB failure"));
+
+        ResponseEntity<List<CriterionScoreResponseDTO>> response = controller.getScoresByStageEvaluation(1);
+
+        assertEquals(500, response.getStatusCodeValue());
+    }
+
+    // === Test: POST /evaluate/{stageEvaluationId} ===
+    @Test
+    void saveCriteriaScoresForStageEvaluation_shouldReturnOk() {
+        Integer stageEvaluationId = 1;
+        SaveCriterionScoresRequest request = new SaveCriterionScoresRequest();
+        StageEvaluationResponseDTO responseDTO = new StageEvaluationResponseDTO();
+
+        when(criterionScoreService.saveCriteriaScoresForStageEvaluation(stageEvaluationId, request)).thenReturn(responseDTO);
+
+        ResponseEntity<StageEvaluationResponseDTO> response = controller.saveCriteriaScoresForStageEvaluation(stageEvaluationId, request);
+
+        assertEquals(200, response.getStatusCodeValue());
         assertEquals(responseDTO, response.getBody());
-        verify(criterionScoreService).saveCriteriaScoresForStageEvaluation(stageEvaluationId, request);
     }
 
     @Test
-    void evaluateStage_NotFound() {
-        int stageEvaluationId = 1;
-        SaveCriterionScoresRequest request = dummySaveCriterionScoresRequest();
+    void saveCriteriaScoresForStageEvaluation_shouldReturnNotFound() {
+        when(criterionScoreService.saveCriteriaScoresForStageEvaluation(eq(1), any()))
+                .thenThrow(new NoSuchElementException());
 
-        when(criterionScoreService.saveCriteriaScoresForStageEvaluation(stageEvaluationId, request))
-                .thenThrow(new NoSuchElementException("Stage evaluation not found"));
+        ResponseEntity<StageEvaluationResponseDTO> response = controller.saveCriteriaScoresForStageEvaluation(1, new SaveCriterionScoresRequest());
 
-        ResponseEntity<StageEvaluationResponseDTO> response = controller.evaluateStage(stageEvaluationId, request);
-
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertNull(response.getBody());
-        verify(criterionScoreService).saveCriteriaScoresForStageEvaluation(stageEvaluationId, request);
+        assertEquals(404, response.getStatusCodeValue());
     }
 
     @Test
-    void evaluateStage_BadRequest() {
-        int stageEvaluationId = 1;
-        SaveCriterionScoresRequest request = dummySaveCriterionScoresRequest();
+    void saveCriteriaScoresForStageEvaluation_shouldReturnBadRequest() {
+        when(criterionScoreService.saveCriteriaScoresForStageEvaluation(eq(1), any()))
+                .thenThrow(new IllegalArgumentException("Invalid score"));
 
-        when(criterionScoreService.saveCriteriaScoresForStageEvaluation(stageEvaluationId, request))
-                .thenThrow(new IllegalArgumentException("Invalid input"));
+        ResponseEntity<StageEvaluationResponseDTO> response = controller.saveCriteriaScoresForStageEvaluation(1, new SaveCriterionScoresRequest());
 
-        ResponseEntity<StageEvaluationResponseDTO> response = controller.evaluateStage(stageEvaluationId, request);
-
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertNull(response.getBody());
-        verify(criterionScoreService).saveCriteriaScoresForStageEvaluation(stageEvaluationId, request);
+        assertEquals(400, response.getStatusCodeValue());
     }
 
     @Test
-    void evaluateStage_Conflict() {
-        int stageEvaluationId = 1;
-        SaveCriterionScoresRequest request = dummySaveCriterionScoresRequest();
+    void saveCriteriaScoresForStageEvaluation_shouldReturnConflict() {
+        when(criterionScoreService.saveCriteriaScoresForStageEvaluation(eq(1), any()))
+                .thenThrow(new IllegalStateException("Stage mismatch"));
 
-        when(criterionScoreService.saveCriteriaScoresForStageEvaluation(stageEvaluationId, request))
-                .thenThrow(new IllegalStateException("Conflict in saving scores"));
+        ResponseEntity<StageEvaluationResponseDTO> response = controller.saveCriteriaScoresForStageEvaluation(1, new SaveCriterionScoresRequest());
 
-        ResponseEntity<StageEvaluationResponseDTO> response = controller.evaluateStage(stageEvaluationId, request);
-
-        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
-        assertNull(response.getBody());
-        verify(criterionScoreService).saveCriteriaScoresForStageEvaluation(stageEvaluationId, request);
+        assertEquals(409, response.getStatusCodeValue());
     }
 
     @Test
-    void evaluateStage_InternalServerError() {
-        int stageEvaluationId = 1;
-        SaveCriterionScoresRequest request = dummySaveCriterionScoresRequest();
+    void saveCriteriaScoresForStageEvaluation_shouldReturnInternalServerError() {
+        when(criterionScoreService.saveCriteriaScoresForStageEvaluation(eq(1), any()))
+                .thenThrow(new RuntimeException("Unexpected failure"));
 
-        when(criterionScoreService.saveCriteriaScoresForStageEvaluation(stageEvaluationId, request))
-                .thenThrow(new RuntimeException("Unexpected error"));
+        ResponseEntity<StageEvaluationResponseDTO> response = controller.saveCriteriaScoresForStageEvaluation(1, new SaveCriterionScoresRequest());
 
-        ResponseEntity<StageEvaluationResponseDTO> response = controller.evaluateStage(stageEvaluationId, request);
-
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertNull(response.getBody());
-        verify(criterionScoreService).saveCriteriaScoresForStageEvaluation(stageEvaluationId, request);
+        assertEquals(500, response.getStatusCodeValue());
     }
 
-    // Tests for GET /by-stage-evaluation/{stageEvaluationId}
-
+    // === Test: PUT /{id} ===
     @Test
-    void getScoresByStageEvaluation_Success() {
-        int stageEvaluationId = 1;
-        List<CriterionScore> scores = dummyCriterionScores();
+    void updateCriterionScore_shouldReturnOk() {
+        UpdateCriterionScoreDTO updateDTO = new UpdateCriterionScoreDTO();
+        StageEvaluationResponseDTO updated = new StageEvaluationResponseDTO();
 
-        when(criterionScoreService.getScoresByStageEvaluation(stageEvaluationId))
-                .thenReturn(scores);
+        when(criterionScoreService.updateCriterionScore(1, updateDTO)).thenReturn(updated);
 
-        ResponseEntity<List<CriterionScore>> response = controller.getScoresByStageEvaluation(stageEvaluationId);
+        ResponseEntity<StageEvaluationResponseDTO> response = controller.updateCriterionScore(1, updateDTO);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(scores, response.getBody());
-        verify(criterionScoreService).getScoresByStageEvaluation(stageEvaluationId);
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(updated, response.getBody());
     }
 
     @Test
-    void getScoresByStageEvaluation_NoContent() {
-        int stageEvaluationId = 1;
+    void updateCriterionScore_shouldReturnNotFound() {
+        when(criterionScoreService.updateCriterionScore(eq(1), any()))
+                .thenThrow(new NoSuchElementException());
 
-        when(criterionScoreService.getScoresByStageEvaluation(stageEvaluationId))
-                .thenReturn(Collections.emptyList());
+        ResponseEntity<StageEvaluationResponseDTO> response = controller.updateCriterionScore(1, new UpdateCriterionScoreDTO());
 
-        ResponseEntity<List<CriterionScore>> response = controller.getScoresByStageEvaluation(stageEvaluationId);
-
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
-        assertNull(response.getBody());
-        verify(criterionScoreService).getScoresByStageEvaluation(stageEvaluationId);
+        assertEquals(404, response.getStatusCodeValue());
     }
 
     @Test
-    void getScoresByStageEvaluation_NotFound() {
-        int stageEvaluationId = 1;
+    void updateCriterionScore_shouldReturnInternalServerError() {
+        when(criterionScoreService.updateCriterionScore(eq(1), any()))
+                .thenThrow(new RuntimeException("Update error"));
 
-        when(criterionScoreService.getScoresByStageEvaluation(stageEvaluationId))
-                .thenThrow(new NoSuchElementException("Stage evaluation not found"));
+        ResponseEntity<StageEvaluationResponseDTO> response = controller.updateCriterionScore(1, new UpdateCriterionScoreDTO());
 
-        ResponseEntity<List<CriterionScore>> response = controller.getScoresByStageEvaluation(stageEvaluationId);
-
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertNull(response.getBody());
-        verify(criterionScoreService).getScoresByStageEvaluation(stageEvaluationId);
-    }
-
-    @Test
-    void getScoresByStageEvaluation_InternalServerError() {
-        int stageEvaluationId = 1;
-
-        when(criterionScoreService.getScoresByStageEvaluation(stageEvaluationId))
-                .thenThrow(new RuntimeException("Unexpected error"));
-
-        ResponseEntity<List<CriterionScore>> response = controller.getScoresByStageEvaluation(stageEvaluationId);
-
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertNull(response.getBody());
-        verify(criterionScoreService).getScoresByStageEvaluation(stageEvaluationId);
+        assertEquals(500, response.getStatusCodeValue());
     }
 }

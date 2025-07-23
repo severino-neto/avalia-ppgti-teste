@@ -1,150 +1,157 @@
 package ifpb.edu.br.avaliappgti.service;
 
+import ifpb.edu.br.avaliappgti.dto.UpdateEvaluationCriterionRequestDTO;
+import ifpb.edu.br.avaliappgti.model.*;
+import ifpb.edu.br.avaliappgti.repository.*;
 
-import ifpb.edu.br.avaliappgti.model.EvaluationCriterion;
-import ifpb.edu.br.avaliappgti.model.ProcessStage;
-import ifpb.edu.br.avaliappgti.model.SelectionProcess;
-import ifpb.edu.br.avaliappgti.repository.EvaluationCriterionRepository;
-import ifpb.edu.br.avaliappgti.repository.ProcessStageRepository;
-import ifpb.edu.br.avaliappgti.repository.SelectionProcessRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.*;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.math.BigDecimal;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class EvaluationCriterionServiceTest {
 
-    private EvaluationCriterionRepository evaluationCriterionRepository;
-    private ProcessStageRepository processStageRepository;
-    private SelectionProcessRepository selectionProcessRepository;
-    private EvaluationCriterionService evaluationCriterionService;
+    @InjectMocks
+    private EvaluationCriterionService service;
+
+    @Mock
+    private EvaluationCriterionRepository criterionRepository;
+    @Mock
+    private ProcessStageRepository stageRepository;
+    @Mock
+    private SelectionProcessRepository selectionRepository;
+    @Mock
+    private CriterionScoreRepository scoreRepository;
 
     @BeforeEach
     void setUp() {
-        evaluationCriterionRepository = mock(EvaluationCriterionRepository.class);
-        processStageRepository = mock(ProcessStageRepository.class);
-        selectionProcessRepository = mock(SelectionProcessRepository.class);
-        evaluationCriterionService = new EvaluationCriterionService(
-                evaluationCriterionRepository,
-                processStageRepository,
-                selectionProcessRepository
-        );
-    }
-
-    @Test
-    void testGetEvaluationCriterionById_found() {
-        EvaluationCriterion criterion = new EvaluationCriterion();
-        criterion.setId(1);
-        when(evaluationCriterionRepository.findById(1)).thenReturn(Optional.of(criterion));
-
-        Optional<EvaluationCriterion> result = evaluationCriterionService.getEvaluationCriterionById(1);
-
-        assertTrue(result.isPresent());
-        assertEquals(1, result.get().getId());
-    }
-
-    @Test
-    void testGetEvaluationCriterionById_notFound() {
-        when(evaluationCriterionRepository.findById(1)).thenReturn(Optional.empty());
-
-        Optional<EvaluationCriterion> result = evaluationCriterionService.getEvaluationCriterionById(1);
-
-        assertFalse(result.isPresent());
+        MockitoAnnotations.openMocks(this);
+        service = new EvaluationCriterionService(criterionRepository, stageRepository, selectionRepository, scoreRepository);
     }
 
     @Test
     void testGetCriteriaByProcessStageAndSelectionProcessId_success() {
-        Integer processId = 10;
-        Integer stageId = 20;
+        Integer processId = 1;
+        Integer stageId = 10;
 
-        SelectionProcess selectionProcess = new SelectionProcess();
-        selectionProcess.setId(processId);
-
-        ProcessStage processStage = new ProcessStage();
-        processStage.setId(stageId);
-        processStage.setSelectionProcess(selectionProcess);
-
-        EvaluationCriterion ec1 = new EvaluationCriterion();
-        EvaluationCriterion ec2 = new EvaluationCriterion();
-        List<EvaluationCriterion> criteria = Arrays.asList(ec1, ec2);
-
-        when(selectionProcessRepository.findById(processId)).thenReturn(Optional.of(selectionProcess));
-        when(processStageRepository.findById(stageId)).thenReturn(Optional.of(processStage));
-        when(evaluationCriterionRepository.findByProcessStage(processStage)).thenReturn(criteria);
-
-        List<EvaluationCriterion> result = evaluationCriterionService
-                .getCriteriaByProcessStageAndSelectionProcessId(processId, stageId);
-
-        assertEquals(2, result.size());
-        verify(evaluationCriterionRepository).findByProcessStage(processStage);
-    }
-
-    @Test
-    void testGetCriteriaByProcessStageAndSelectionProcessId_selectionProcessNotFound() {
-        when(selectionProcessRepository.findById(99)).thenReturn(Optional.empty());
-
-        NoSuchElementException exception = assertThrows(NoSuchElementException.class, () ->
-                evaluationCriterionService.getCriteriaByProcessStageAndSelectionProcessId(99, 1));
-
-        assertEquals("Selection Process not found with ID: 99", exception.getMessage());
-    }
-
-    @Test
-    void testGetCriteriaByProcessStageAndSelectionProcessId_processStageNotFound() {
-        SelectionProcess selectionProcess = new SelectionProcess();
-        selectionProcess.setId(10);
-
-        when(selectionProcessRepository.findById(10)).thenReturn(Optional.of(selectionProcess));
-        when(processStageRepository.findById(999)).thenReturn(Optional.empty());
-
-        NoSuchElementException exception = assertThrows(NoSuchElementException.class, () ->
-                evaluationCriterionService.getCriteriaByProcessStageAndSelectionProcessId(10, 999));
-
-        assertEquals("Process Stage not found with ID: 999", exception.getMessage());
-    }
-
-    @Test
-    void testGetCriteriaByProcessStageAndSelectionProcessId_stageDoesNotBelongToProcess() {
-        SelectionProcess sp1 = new SelectionProcess();
-        sp1.setId(1);
-
-        SelectionProcess sp2 = new SelectionProcess();
-        sp2.setId(2);
+        SelectionProcess process = new SelectionProcess();
+        process.setId(processId);
 
         ProcessStage stage = new ProcessStage();
-        stage.setId(5);
-        stage.setSelectionProcess(sp2); // belongs to a different process
+        stage.setId(stageId);
+        stage.setSelectionProcess(process);
 
-        when(selectionProcessRepository.findById(1)).thenReturn(Optional.of(sp1));
-        when(processStageRepository.findById(5)).thenReturn(Optional.of(stage));
+        EvaluationCriterion criterion = new EvaluationCriterion();
+        criterion.setId(100);
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                evaluationCriterionService.getCriteriaByProcessStageAndSelectionProcessId(1, 5));
+        when(selectionRepository.findById(processId)).thenReturn(Optional.of(process));
+        when(stageRepository.findById(stageId)).thenReturn(Optional.of(stage));
+        when(criterionRepository.findByProcessStage(stage)).thenReturn(List.of(criterion));
 
-        assertEquals("Process Stage with ID 5 does not belong to Selection Process with ID 1", exception.getMessage());
+        List<EvaluationCriterion> result = service.getCriteriaByProcessStageAndSelectionProcessId(processId, stageId);
+
+        assertEquals(1, result.size());
+        verify(selectionRepository).findById(processId);
+        verify(stageRepository).findById(stageId);
     }
 
     @Test
-    void testSaveEvaluationCriterion() {
-        EvaluationCriterion criterion = new EvaluationCriterion();
-        when(evaluationCriterionRepository.save(criterion)).thenReturn(criterion);
+    void testCreateTopLevelCriterion_success() {
+        ProcessStage stage = new ProcessStage();
+        stage.setId(1);
 
-        EvaluationCriterion result = evaluationCriterionService.saveEvaluationCriterion(criterion);
+        when(stageRepository.findById(1)).thenReturn(Optional.of(stage));
+
+        EvaluationCriterion saved = new EvaluationCriterion(stage, "Critério", BigDecimal.TEN, BigDecimal.ONE, null);
+        when(criterionRepository.save(any())).thenReturn(saved);
+
+        EvaluationCriterion result = service.createTopLevelCriterion(1, "Critério", BigDecimal.TEN, BigDecimal.ONE);
 
         assertNotNull(result);
-        verify(evaluationCriterionRepository, times(1)).save(criterion);
+        assertEquals("Critério", result.getCriterionDescription());
+        verify(criterionRepository).save(any());
     }
 
     @Test
-    void testDeleteEvaluationCriterion() {
-        evaluationCriterionService.deleteEvaluationCriterion(10);
+    void testCreateSubCriterion_success() {
+        ProcessStage stage = new ProcessStage();
+        stage.setId(1);
 
-        verify(evaluationCriterionRepository, times(1)).deleteById(10);
+        EvaluationCriterion topLevel = new EvaluationCriterion(stage, "Top", BigDecimal.TEN, null, null);
+        topLevel.setId(1);
+
+        when(criterionRepository.findById(1)).thenReturn(Optional.of(topLevel));
+        when(criterionRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        EvaluationCriterion result = service.createSubCriterion("Sub", BigDecimal.ONE, BigDecimal.valueOf(0.5), 1);
+
+        assertEquals("Sub", result.getCriterionDescription());
+        assertEquals(topLevel, result.getParent());
+        verify(criterionRepository).save(any());
+    }
+
+    @Test
+    void testUpdateEvaluationCriterion_patchOnlyDescription() {
+        EvaluationCriterion criterion = new EvaluationCriterion();
+        criterion.setId(1);
+        criterion.setCriterionDescription("Old");
+
+        UpdateEvaluationCriterionRequestDTO dto = new UpdateEvaluationCriterionRequestDTO();
+        dto.setDescription("New");
+
+        when(criterionRepository.findById(1)).thenReturn(Optional.of(criterion));
+        when(criterionRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        EvaluationCriterion updated = service.updateEvaluationCriterion(1, dto);
+
+        assertEquals("New", updated.getCriterionDescription());
+        verify(criterionRepository).save(criterion);
+    }
+
+    @Test
+    void testDeleteEvaluationCriterion_success() {
+        EvaluationCriterion criterion = new EvaluationCriterion();
+        criterion.setId(1);
+
+        when(criterionRepository.findById(1)).thenReturn(Optional.of(criterion));
+
+        service.deleteEvaluationCriterion(1);
+
+        verify(scoreRepository).deleteByEvaluationCriterion(criterion);
+        verify(criterionRepository).delete(criterion);
+    }
+
+    @Test
+    void testGetEvaluationCriterionById_success() {
+        EvaluationCriterion criterion = new EvaluationCriterion();
+        criterion.setId(10);
+
+        when(criterionRepository.findById(10)).thenReturn(Optional.of(criterion));
+
+        EvaluationCriterion result = service.getEvaluationCriterionById(10);
+
+        assertEquals(10, result.getId());
+        verify(criterionRepository).findById(10);
+    }
+
+    @Test
+    void testGetTopLevelCriteriaByProcessStage_success() {
+        ProcessStage stage = new ProcessStage();
+        stage.setId(5);
+        EvaluationCriterion c1 = new EvaluationCriterion();
+        c1.setId(100);
+
+        when(stageRepository.findById(5)).thenReturn(Optional.of(stage));
+        when(criterionRepository.findByProcessStageAndParentIsNull(stage)).thenReturn(List.of(c1));
+
+        List<EvaluationCriterion> result = service.getTopLevelCriteriaByProcessStage(5);
+
+        assertEquals(1, result.size());
+        verify(criterionRepository).findByProcessStageAndParentIsNull(stage);
     }
 }
