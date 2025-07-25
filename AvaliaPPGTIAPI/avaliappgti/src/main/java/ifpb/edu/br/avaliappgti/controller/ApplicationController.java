@@ -6,6 +6,7 @@ import ifpb.edu.br.avaliappgti.model.Candidate;
 import ifpb.edu.br.avaliappgti.service.ApplicationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/applications")
+@PreAuthorize("hasRole('ROLE_COMMITTEE')")
 public class ApplicationController {
 
     private final ApplicationService applicationService;
