@@ -13,8 +13,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 
 @Configuration
-@EnableWebSecurity
-@EnableMethodSecurity
+// @EnableWebSecurity
+// @EnableMethodSecurity
 public class SecurityConfig {
 
     @Bean
@@ -23,7 +23,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable) // Disable CSRF for stateless APIs
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll() // Allow public access to login/logout
-                        .anyRequest().authenticated() // All other requests must be authenticated
+                        //.anyRequest().authenticated() // All other requests must be authenticated
+                        .anyRequest().permitAll() 
                 );
 
         return http.build();

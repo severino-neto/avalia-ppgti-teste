@@ -117,9 +117,10 @@ const ClassificacaoPorEtapa = ({ processId = 1 }) => {
             const tableData = group.candidatos.map(c => [
                 c.nome,
                 c.cota ? 'Sim' : 'Não',
-                c.nota.toString(),
+                c.nota?.toString() ?? 'Null',
                 c.status,
             ]);
+
 
             autoTable(doc, {
                 startY: yPos,
