@@ -2,6 +2,15 @@ const BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080';
 
 // TODO: tornar o id do processo dinâmico futuramente
 export const API_ENDPOINTS = {
+
+     // Processos seletivos
+    CURRENT_PROCESS: `${BASE_URL}/api/selection-processes/current`,
+    CURRENT_PROCESS_WEIGHTS: `${BASE_URL}/api/selection-processes/current/weights`,
+    
+    // Tópicos de pesquisa
+    RESEARCH_TOPICS_BY_PROCESS: (processId) => `${BASE_URL}/api/research-topics/by-process/${processId}`,
+    UPDATE_RESEARCH_TOPIC: (id) => `${BASE_URL}/api/research-topics/${id}`,
+    
     RESEARCH_TOPICS: `${BASE_URL}/api/research-topics/by-process/1`,
 
     EVALUATION_CRITERIA_BY_PROCESS_STAGE: (processStageId) =>
@@ -37,6 +46,9 @@ export const API_ENDPOINTS = {
     RANKING_BY_TOPIC: (processId, stageId, researchTopicId) => 
       `${BASE_URL}/api/ranking/process/${processId}/stage/${stageId}/topic/${researchTopicId}`,
 
+    RESEARCH_TOPICS_BY_PROCESS: (processId) => 
+      `${BASE_URL}/api/research-topics/by-process/${processId}`,
+
     RANKING_BY_STATUS: (processId, stageId, status) => 
       `${BASE_URL}/api/ranking/process/${processId}/stage/${stageId}/status/${status}`,
 
@@ -44,4 +56,16 @@ export const API_ENDPOINTS = {
         `${BASE_URL}/api/ranking/generate/process/${processId}`,
 
     CALCULATE_TOTAL_STAGE_SCORE: (stageEvalId) => `${BASE_URL}/api/stage-evaluations/${stageEvalId}/calculate-total-score`,
+
+
+     // Endpoint para GERAR o ranking (POST)
+    GENERATE_RANKING: (processId) => `${BASE_URL}/api/ranking/generate/process/${processId}`,
+    
+    // Endpoint para OBTER o ranking (GET)
+    GET_RANKING: (processId) => `${BASE_URL}/api/ranking/process/${processId}`,
+    
+    // Endpoint para dados por etapa (GET)
+    RANKING_BY_STAGE: (processId, stageId) => 
+        `${BASE_URL}/api/ranking/process/${processId}/stage/${stageId}`,
+    
 };

@@ -30,7 +30,7 @@ const App = () => {
             <Nav.Link as={Link} to="/resultado">Resultado por Etapa</Nav.Link>
             <Nav.Link as={Link} to="/classificacao">Classificação</Nav.Link>
             <Nav.Link as={Link} to="/login">Login</Nav.Link>
-            <Nav.Link as={Link} to="/pesos">Configuração de Pesos</Nav.Link>
+            <Nav.Link as={Link} to="/pesos">Configurações do processo</Nav.Link>
           </Nav>
           </Navbar.Collapse>
         </Container>

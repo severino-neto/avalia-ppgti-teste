@@ -18,6 +18,7 @@ const processApiData = (apiData, etapa) => {
             acc[key] = {
                 linhaPesquisa: item.researchLineName,
                 temaPesquisa: item.researchTopicName,
+                temaPesquisaId: item.researchTopicId,
                 candidatos: [],
             };
         }
@@ -172,17 +173,21 @@ const ClassificacaoPorEtapa = ({ processId = 1 }) => {
     };
 
     const uniqueOptions = (key) => {
-        const options = new Set();
+        const options = new Map();
+
         Object.values(data).forEach(stage => {
             stage?.forEach(item => {
                 if (key === 'status') {
-                    item.candidatos.forEach(c => options.add(c[key]));
+                    item.candidatos.forEach(c => options.set(c[key], c[key]));
+                } else if (key === 'temaPesquisa') {
+                    options.set(item.temaPesquisaId, { id: item.temaPesquisaId, name: item.temaPesquisa });
                 } else {
-                    options.add(item[key]);
+                    options.set(item[key], item[key]);
                 }
             });
         });
-        return Array.from(options);
+
+        return Array.from(options.values());
     };
 
     return (
@@ -190,7 +195,7 @@ const ClassificacaoPorEtapa = ({ processId = 1 }) => {
             <h2>Resultados Por Etapa</h2>
             <div className="d-flex justify-content-between align-items-center my-3">
                 <Dropdown onSelect={(e) => handleFilterChange('linhaPesquisa', e)}>
-                    <Dropdown.Toggle variant="primary">
+                    <Dropdown.Toggle variant="primary"  style={{ maxwidth: '250px', textAlign: 'center' }}>
                         {filters.linhaPesquisa || 'Linha de Pesquisa'}
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
@@ -202,19 +207,24 @@ const ClassificacaoPorEtapa = ({ processId = 1 }) => {
                 </Dropdown>
 
                 <Dropdown onSelect={(e) => handleFilterChange('temaPesquisa', e)}>
-                    <Dropdown.Toggle variant="primary">
+                    <Dropdown.Toggle variant="primary" style={{ maxWidth: '250px', textAlign: 'center' }}>
                         {filters.temaPesquisa || 'Tema de Pesquisa'}
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
                         <Dropdown.Item eventKey="">Todos</Dropdown.Item>
-                        {uniqueOptions('temaPesquisa').map((opt, idx) => (
-                            <Dropdown.Item key={idx} eventKey={opt}>{opt}</Dropdown.Item>
-                        ))}
+                        {uniqueOptions('temaPesquisa')
+                            .sort((a, b) => a.id - b.id)
+                            .map((opt) => (
+                                <Dropdown.Item key={opt.id} eventKey={opt.name}>
+                                    Tema {opt.id}: {opt.name}
+                                </Dropdown.Item>
+                            ))}
                     </Dropdown.Menu>
                 </Dropdown>
 
+
                 <Dropdown onSelect={(e) => handleFilterChange('status', e)}>
-                    <Dropdown.Toggle variant="primary">
+                    <Dropdown.Toggle variant="primary"  style={{ maxwidth: '250px', textAlign: 'center' }}>
                         {filters.status || 'Status'}
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
